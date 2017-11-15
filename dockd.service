@@ -1,0 +1,11 @@
+[Unit]
+Description="Lenovo ThinkPad Docking Service"
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/dockd
+
+[Install]
+Alias=dockd
+WantedBy=multi-user.target
+
