@@ -5,11 +5,12 @@
 #include "crtc.h"
 #include "libthinkpad.h"
 
-#define VERSION "1.00"
+#define VERSION "1.01"
 
 using ThinkPad::PowerManagement::ACPI;
 using ThinkPad::PowerManagement::ACPIEvent;
 using ThinkPad::PowerManagement::ACPIEventHandler;
+using ThinkPad::Utilities::Versioning;
 
 class ACPIHandler : public ACPIEventHandler {
 
@@ -57,12 +58,12 @@ int startDaemon() {
 }
 
 int showHelp() {
-    printf("dockd " VERSION
-           "\n\n"
-           "dockd --help                        - show this help dialog\n"
-           "dockd --config [docked|undocked]    - write config files\n"
-           "dockd --set [docked|undocked]       - set the saved config\n"
-           "dockd --daemon                      - start the dock daemon\n");
+    printf("Usage: dockd [OPERAND] [?ARGUMENT]\n"
+           "\n"
+           "    dockd --help                        - show this help dialog\n"
+           "    dockd --config [docked|undocked]    - write config files\n"
+           "    dockd --set [docked|undocked]       - set the saved config\n"
+           "    dockd --daemon                      - start the dock daemon\n");
 }
 
 int writeConfig(const char *state) {
@@ -128,7 +129,7 @@ int main(int argc, char *argv[])
             "There is NO WARRANTY, to the extent permitted by law.\n"
             "\n\n"
             "Written by Ognjen Galic\n"
-            "See --help for more information\n", LIBTHINKPAD_MAJOR, LIBTHINKPAD_MINOR);
+            "See --help for more information\n", Versioning::getMajorVersion(), Versioning::getMinorVersion());
         return EXIT_SUCCESS;
     }
 
