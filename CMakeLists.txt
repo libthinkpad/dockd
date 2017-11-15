@@ -21,5 +21,3 @@ target_link_libraries(${PROJECT_NAME} X11 Xrandr udev thinkpad)
 install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION bin)
 
-install(FILES ${PROJECT_NAME}.service
-        DESTINATION "/etc/systemd/system")
