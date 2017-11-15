@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <cstring>
+#include <syslog.h>
 
 #include "crtc.h"
 #include "libthinkpad.h"
@@ -41,6 +42,8 @@ void ACPIHandler::handleEvent(ACPIEvent event) {
 
 int startDaemon() {
 
+    openlog("dockd", LOG_NDELAY | LOG_PID, LOG_DAEMON);
+
     ACPI acpi;
     ACPIHandler handler;
 
@@ -48,6 +51,8 @@ int startDaemon() {
 
     acpi.start();
     acpi.wait();
+
+    closelog();
 
 }
 

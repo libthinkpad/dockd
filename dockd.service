@@ -3,7 +3,7 @@ Description="Lenovo ThinkPad Docking Service"
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/dockd
+ExecStart=/usr/bin/dockd --daemon
 
 [Install]
 Alias=dockd
