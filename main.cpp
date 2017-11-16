@@ -5,18 +5,20 @@
 #include "crtc.h"
 #include "libthinkpad.h"
 
-#define VERSION "1.01"
+#define VERSION "1.02"
 
 using ThinkPad::PowerManagement::ACPI;
 using ThinkPad::PowerManagement::ACPIEvent;
 using ThinkPad::PowerManagement::ACPIEventHandler;
 using ThinkPad::Utilities::Versioning;
+using ThinkPad::Hardware::Dock;
 
 class ACPIHandler : public ACPIEventHandler {
 
 private:
     CRTControllerManager manager;
     pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+    Dock dock;
 
 public:
     void handleEvent(ACPIEvent event);
@@ -26,17 +28,31 @@ void ACPIHandler::handleEvent(ACPIEvent event) {
 
     switch(event) {
         case ACPIEvent::DOCKED:
-            printf("ACPI docked\n");
             pthread_mutex_lock(&mutex);
             manager.applyConfiguration(CRTControllerManager::DockState::DOCKED);
             pthread_mutex_unlock(&mutex);
             break;
         case ACPIEvent::UNDOCKED:
-            printf("ACPI undocked\n");
             pthread_mutex_lock(&mutex);
             manager.applyConfiguration(CRTControllerManager::DockState::UNDOCKED);
             pthread_mutex_unlock(&mutex);
             break;
+        case ACPIEvent::POWER_S3S4_EXIT:
+
+            if (!dock.probe()) {
+                syslog(LOG_INFO, "Dock is not sane, not running dynamic sleep handler\n");
+                return;
+            }
+
+            pthread_mutex_lock(&mutex);
+
+            if (dock.isDocked()) {
+                manager.applyConfiguration(CRTControllerManager::DockState::DOCKED);
+            } else {
+                manager.applyConfiguration(CRTControllerManager::DockState::UNDOCKED);
+            }
+
+            pthread_mutex_unlock(&mutex);
     }
 
 }
