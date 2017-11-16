@@ -16,7 +16,7 @@ set(hdrs
 
 add_executable(${PROJECT_NAME} ${srcs} ${hdrs})
 
-target_link_libraries(${PROJECT_NAME} X11 Xrandr udev thinkpad)
+target_link_libraries(${PROJECT_NAME} X11 Xrandr thinkpad)
 
 install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION bin)
