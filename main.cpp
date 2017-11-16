@@ -5,7 +5,7 @@
 #include "crtc.h"
 #include "libthinkpad.h"
 
-#define VERSION "1.02"
+#define VERSION "1.20"
 
 using ThinkPad::PowerManagement::ACPI;
 using ThinkPad::PowerManagement::ACPIEvent;
