@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Lenovo ThinkPad Dock Daemon
+Comment=This handles the dock for Lenovo ThinkPads
+Icon=system-run
+Exec=dockd --daemon
+Terminal=false
+Type=Application
+NoDisplay=true
+NotShowIn=KDE;GNOME;
