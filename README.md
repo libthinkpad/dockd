@@ -1,3 +1,5 @@
+# dockd - Dock Management Daemon
+
 When moving from Windows to Linux on a lightweight desktop environment like Xfce or LXDE, using the dock is really hard.   
 Usually nothing happens when you insert the dock, and you use xrandr to configure your displays. Then, you remove the ThinkPad   
 from the dock and the screen stays blank.
@@ -214,7 +216,7 @@ Dockd has two configuration files in `/etc/dockd/` that need to be written. Firs
 
 Here is an example of one external monitor on a ThinkPad X220 and a Ultrabase Series 3.
 
-![img](/res/xfceext.png)
+![img](https://i.imgur.com/UkI9NOZ.png)
 
 * Run `sudo dockd --config docked`
 
@@ -229,7 +231,7 @@ The configuration when docked is now written.
 
 Here is an example of a Lenovo X220 internal panel running at it's native resolution of 1366x768:
 
-![img](/res/xfceint.png)
+![img](https://i.imgur.com/6xXAjr8.png)
 
 * Run `sudo dockd --config undocked`
 
