@@ -28,8 +28,10 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
     /*
      * Step 0: Check config files
      * Step 1: Open the right config file
-     * Step 3: Apply the crtc configuration
-     * Step 4: Apply the screen configuration
+     * Step 2: Parse the crtc configuration
+     * Step 3: Disable all crts
+     * Step 4: Resize the screen
+     * Step 5: Apply the crtc configuration
      */
 
     /* Step 0 */
@@ -58,7 +60,7 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
     }
 
 
-    /* Step 3 */
+    /* Step 2 */
 
     vector<IniSection*> configControllers = config.getSections("CRTC");
 
@@ -149,19 +151,19 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
 
     }
 
-    /* Apply the configs */
-
     if (!isControllerConfigValid) {
         syslog(LOG_ERR, "Controller config is not valid, not committing changes to X\n");
         return false;
     }
 
+    /* Step 3 */
+
     XGrabServer(display);
 
     for (CRTConfig *controller : controllerConfigs) {
 
-        syslog(LOG_INFO, "Applying config to %4lu: mode: %4lu, outputs: %4zu, x: %4d, y: %4d\n",
-               controller->crtc, controller->mode, controller->noutputs, controller->x, controller->y);
+        syslog(LOG_INFO, "Disabling %4lu\n",
+               controller->crtc);
 
 #ifndef DRYRUN
 
@@ -169,23 +171,18 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
                          resources,
                          controller->crtc,
                          CurrentTime,
-                         controller->x,
-                         controller->y,
-                         controller->mode,
-                         controller->rotation,
-                         controller->outputs,
-                         (int) controller->noutputs); // cast: stack smashing: size_t (ul) copy into noutputs: int (d)
+                         0,
+                         0,
+                         None,
+                         RR_Rotate_0,
+                         nullptr,
+                         0);
 
 #endif // DRYRUN
 
-        free(controller->outputs);
-        delete controller;
-
     }
 
-    XUngrabServer(display);
     XSync(display, 0);
-    XGrabServer(display);
 
     /* Step 4 */
 
@@ -205,9 +202,40 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
 
 #endif // DRYRUN
 
-    XUngrabServer(display);
+    XSync(display, 0);
+
+    /* Step 5 */
+
+    for (CRTConfig *controller : controllerConfigs) {
+
+        syslog(LOG_INFO, "Applying config to %4lu: mode: %4lu, outputs: %4zu, x: %4d, y: %4d\n",
+               controller->crtc, controller->mode, controller->noutputs, controller->x, controller->y);
+
+#ifndef DRYRUN
+
+        if (controller->mode != 0) { // CRTC is to be enabled
+            XRRSetCrtcConfig(display,
+                             resources,
+                             controller->crtc,
+                             CurrentTime,
+                             controller->x,
+                             controller->y,
+                             controller->mode,
+                             controller->rotation,
+                             controller->outputs,
+                             (int) controller->noutputs); // cast: stack smashing: size_t (ul) copy into noutputs: int (d)
+        }
+
+
+#endif // DRYRUN
+
+        free(controller->outputs);
+        delete controller;
+
+    }
 
     XSync(display, 0);
+    XUngrabServer(display);
 
     return true;
 
