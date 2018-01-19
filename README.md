@@ -14,6 +14,7 @@ and it automatically switches output mode profiles that you have configured befo
 - [How to install dockd?](#howtoinstalldockd)
 - [How to use dockd?](#howtousedockd)
 - [What if I change the monitor I used to configure the dock?](#whatifichangethemonitoriusedtoconfigurethedock)
+- [Dock and undock hooks](#dockandundockhooks)
 - [Changelog](#changelog)
 
 ---
@@ -275,9 +276,20 @@ config file written to /etc/dockd/docked.conf
 
 Now, log out and log back in and everything should work normally.
 
+## Dock and undock hooks
+
+If you want to to additional actions after docking or undocking,
+you can define them in /etc/dockd/dock.hook and /etc/dockd/undock.hook.
+
+There, you can disable WiFi when docked, change input profiles, keyboard
+layouts, sound outputs and so on.
+
 ## Changelog
 
 __*What's new in version 1.20*__
 * First public releae
+
+__*What's new in version 1.21*__
+* Added support for dock and undock hooks
 
 [Back to top](#)
