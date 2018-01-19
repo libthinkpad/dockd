@@ -8,10 +8,12 @@ add_definitions(-pthread)
 set(srcs
     "main.cpp"
     "crtc.cpp"
+    "hooks.cpp"
 )
 
 set(hdrs
     "crtc.h"
+    "hooks.h"
 )
 
 add_executable(${PROJECT_NAME} ${srcs} ${hdrs})
@@ -22,6 +24,8 @@ install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION bin)
 
 install(FILES dockd.desktop DESTINATION /etc/xdg/autostart)
+install(FILES dock.hook DESTINATION /etc/dockd)
+install(FILES undock.hook DESTINATION /etc/dockd)
 
 set(CPACK_PACKAGE_VENDOR "Ognjen Galic")
 set(CPACK_PACKAGE_VERSION_MAJOR 1)

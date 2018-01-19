@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# This hook is executed when the laptop is docked into a dockd.
+# Here you can do stuff such as disabling WiFi, switching input profiles,
+# switching keyboard layouts etc.
+# SCRIPT EXECUTES AS NON ROOT!
+
+exit

@@ -3,6 +3,7 @@
 #include <syslog.h>
 
 #include "crtc.h"
+#include "hooks.h"
 #include "libthinkpad.h"
 
 #define VERSION "1.20"
@@ -19,6 +20,7 @@ private:
     CRTControllerManager manager;
     pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
     Dock dock;
+    Hooks hooks;
 
 public:
     void handleEvent(ACPIEvent event);
@@ -30,11 +32,13 @@ void ACPIHandler::handleEvent(ACPIEvent event) {
         case ACPIEvent::DOCKED:
             pthread_mutex_lock(&mutex);
             manager.applyConfiguration(CRTControllerManager::DockState::DOCKED);
+	    hooks.executeDockHook();
             pthread_mutex_unlock(&mutex);
             break;
         case ACPIEvent::UNDOCKED:
             pthread_mutex_lock(&mutex);
             manager.applyConfiguration(CRTControllerManager::DockState::UNDOCKED);
+	    hooks.executeUndockHook();
             pthread_mutex_unlock(&mutex);
             break;
         case ACPIEvent::POWER_S3S4_EXIT:
