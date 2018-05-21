@@ -62,7 +62,7 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
 
     vector<IniSection*> configControllers = config.getSections("CRTC");
 
-    if (configControllers.size() < resources->ncrtc) {
+    if (configControllers.size() > resources->ncrtc) {
         syslog(LOG_ERR, "Not enough CRT controllers to set config, aborting\n");
         return false;
     }
