@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <cstring>
 #include <syslog.h>
+#include <usb.h>
 
 #include "crtc.h"
 #include "hooks.h"
@@ -8,23 +9,63 @@
 
 #define VERSION "1.21"
 
+#define LENOVO_VENDOR_ID 0x17ef
+#define LENOVO_ULTRADOCK_2015 0x100f
+
 using ThinkPad::PowerManagement::ACPI;
 using ThinkPad::PowerManagement::ACPIEvent;
 using ThinkPad::PowerManagement::ACPIEventHandler;
 using ThinkPad::Utilities::Versioning;
 using ThinkPad::Hardware::Dock;
 
+static int isUltradockAttached;
+static CRTControllerManager manager;
+static Hooks hooks;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 class ACPIHandler : public ACPIEventHandler {
 
 private:
-    CRTControllerManager manager;
-    pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
     Dock dock;
-    Hooks hooks;
 
 public:
     void handleEvent(ACPIEvent event);
 };
+
+int isDockAttachedUltradock() {
+    usb_find_busses();
+    usb_find_devices();
+    struct usb_bus *busses = usb_get_busses();
+    struct usb_bus *bus;
+    struct usb_device *device;
+    for (bus = busses; bus; bus = bus->next) {
+        for (device = bus->devices; device; device = device->next) {
+            if (device->descriptor.idVendor == LENOVO_VENDOR_ID && device->descriptor.idProduct == LENOVO_ULTRADOCK_2015)
+                return 1;
+        }
+    }
+    return 0;
+}
+
+void checkForUltraDock() {
+    usleep(10000); // wait for USB sanitize
+    int currentDockStatus = isDockAttachedUltradock();
+    if (currentDockStatus != isUltradockAttached) {
+        pthread_mutex_lock(&mutex);
+        if (currentDockStatus == 1) {
+            syslog(LOG_INFO, "Inserted into UltraDock (2015), detected via USB");
+            manager.applyConfiguration(CRTControllerManager::DockState::DOCKED);
+            hooks.executeDockHook();
+        }
+        if (currentDockStatus == 0) {
+            syslog(LOG_INFO, "Removed from UltraDock (2015), detected via USB");
+            manager.applyConfiguration(CRTControllerManager::DockState::UNDOCKED);
+            hooks.executeUndockHook();
+        }
+        pthread_mutex_unlock(&mutex);
+    }
+    isUltradockAttached = currentDockStatus;
+}
 
 void ACPIHandler::handleEvent(ACPIEvent event) {
 
@@ -42,21 +83,29 @@ void ACPIHandler::handleEvent(ACPIEvent event) {
             pthread_mutex_unlock(&mutex);
             break;
         case ACPIEvent::POWER_S3S4_EXIT:
+            if (dock.probe()) {
+                pthread_mutex_lock(&mutex);
 
-            if (!dock.probe()) {
-                syslog(LOG_INFO, "Dock is not sane, not running dynamic sleep handler\n");
-                return;
-            }
+                if (dock.isDocked()) {
+                    manager.applyConfiguration(CRTControllerManager::DockState::DOCKED);
+                } else {
+                    manager.applyConfiguration(CRTControllerManager::DockState::UNDOCKED);
+                }
 
-            pthread_mutex_lock(&mutex);
-
-            if (dock.isDocked()) {
-                manager.applyConfiguration(CRTControllerManager::DockState::DOCKED);
+                pthread_mutex_unlock(&mutex);
             } else {
-                manager.applyConfiguration(CRTControllerManager::DockState::UNDOCKED);
+                syslog(LOG_INFO, "Dock is not sane, not running dynamic sleep handler for ACPI, checking USB\n");
+                checkForUltraDock();
             }
-
-            pthread_mutex_unlock(&mutex);
+            break;
+       case ACPIEvent::THERMAL_ZONE:
+            /*
+             * This here handles special cases like USB docks. A usb dock could
+             * be inserted and the thermal tables changes in the ACPI firmware. This
+             * gets fired here, then we diff the state.
+             */
+            checkForUltraDock();
+            break;
     }
 
 }
@@ -64,6 +113,12 @@ void ACPIHandler::handleEvent(ACPIEvent event) {
 int startDaemon() {
 
     openlog("dockd", LOG_NDELAY | LOG_PID, LOG_DAEMON);
+
+    usb_init();
+
+    isUltradockAttached = isDockAttachedUltradock();
+    if (isUltradockAttached)
+        syslog(LOG_INFO, "Lenovo UltraDock (2015) Detected");
 
     ACPI acpi;
     ACPIHandler handler;
