@@ -7,7 +7,7 @@
 #include "hooks.h"
 #include "libthinkpad.h"
 
-#define VERSION "1.21"
+#define VERSION "1.30"
 
 #define LENOVO_VENDOR_ID 0x17ef
 #define LENOVO_ULTRADOCK_2015 0x100f
