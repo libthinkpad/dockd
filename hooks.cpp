@@ -10,7 +10,7 @@ void Hooks::executeDockHook()
 	if (ret == -1)
 		syslog(LOG_ERR, "Failed to execute dock hook");
 	if (ret != 0)
-		syslog(LOG_ERR, "Undock hook exited with non-zero (%d)", ret);
+		syslog(LOG_ERR, "Dock hook exited with non-zero (%d)", ret);
 }
 
 void Hooks::executeUndockHook()
@@ -20,5 +20,5 @@ void Hooks::executeUndockHook()
 	if (ret == -1)
 		syslog(LOG_ERR, "Failed to execute undock hook");
 	if (ret != 0)
-		syslog(LOG_ERR, "Dock hook exited with non-zero value (%d)", ret);
+		syslog(LOG_ERR, "Undock hook exited with non-zero value (%d)", ret);
 }
