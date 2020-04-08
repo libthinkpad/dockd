@@ -5,7 +5,7 @@
 
 void Hooks::executeDockHook()
 {
-	int ret = system("/etc/dockd/dock.hook");
+	int ret = system("/bin/bash /etc/dockd/dock.hook");
 
 	if (ret == -1)
 		syslog(LOG_ERR, "Failed to execute dock hook");
@@ -15,7 +15,7 @@ void Hooks::executeDockHook()
 
 void Hooks::executeUndockHook()
 {
-	int ret = system("/etc/dockd/undock.hook");
+	int ret = system("/bin/bash /etc/dockd/undock.hook");
 
 	if (ret == -1)
 		syslog(LOG_ERR, "Failed to execute undock hook");

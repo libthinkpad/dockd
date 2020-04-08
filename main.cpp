@@ -135,7 +135,7 @@ int applyConfig(const char *state) {
                dockState == CRTControllerManager::DockState::DOCKED ? CONFIG_LOCATION_DOCKED : CONFIG_LOCATION_UNDOCKED);
 
     }
-
+	return EXIT_SUCCESS;
 }
 
 int main(int argc, char *argv[])
