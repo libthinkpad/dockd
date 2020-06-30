@@ -329,6 +329,8 @@ bool CRTControllerManager::writeConfigToDisk(CRTControllerManager::DockState sta
         return ini.writeIni(CONFIG_LOCATION_UNDOCKED);
     }
 
+    return false;
+
 }
 
 CRTControllerManager::OutputConfigs CRTControllerManager::getOutputConfigs(vector<const char *> *configOutputNames,

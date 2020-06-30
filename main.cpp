@@ -74,7 +74,7 @@ int startDaemon() {
     acpi.wait();
 
     closelog();
-
+    return EXIT_SUCCESS;
 }
 
 int showHelp() {
@@ -84,6 +84,7 @@ int showHelp() {
            "    dockd --config [docked|undocked]    - write config files\n"
            "    dockd --set [docked|undocked]       - set the saved config\n"
            "    dockd --daemon                      - start the dock daemon\n");
+    return EXIT_SUCCESS;
 }
 
 int writeConfig(const char *state) {
@@ -109,7 +110,7 @@ int writeConfig(const char *state) {
                dockState == CRTControllerManager::DockState::DOCKED ? CONFIG_LOCATION_DOCKED : CONFIG_LOCATION_UNDOCKED);
 
     }
-
+    return EXIT_SUCCESS;
 }
 
 int applyConfig(const char *state) {
@@ -135,6 +136,7 @@ int applyConfig(const char *state) {
                dockState == CRTControllerManager::DockState::DOCKED ? CONFIG_LOCATION_DOCKED : CONFIG_LOCATION_UNDOCKED);
 
     }
+    return EXIT_SUCCESS;
 
 }
 
@@ -186,5 +188,4 @@ int main(int argc, char *argv[])
     fprintf(stderr, "Unknown option: %s. See --help\n", argv[1]);
 
     return EXIT_FAILURE;
-
 }
