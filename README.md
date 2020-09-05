@@ -1,10 +1,10 @@
 # dockd - Dock Management Daemon
 
-When moving from Windows to Linux on a lightweight desktop environment like Xfce or LXDE, using the dock is really hard.   
-Usually nothing happens when you insert the dock, and you use xrandr to configure your displays. Then, you remove the ThinkPad   
+When moving from Windows to Linux on a lightweight desktop environment like Xfce or LXDE, using the dock is really hard.
+Usually nothing happens when you insert the dock, and you use xrandr to configure your displays. Then, you remove the ThinkPad
 from the dock and the screen stays blank.
 
-That's why we created dockd, a program that runs in the background and detects when your ThinkPad is added or removed from a dock    
+That's why we created dockd, a program that runs in the background and detects when your ThinkPad is added or removed from a dock
 and it automatically switches output mode profiles that you have configured before.
 
 ## Table of Contents
@@ -21,19 +21,19 @@ and it automatically switches output mode profiles that you have configured befo
 
 ## Do you need dockd?
 
-A few people have reported bugs with dockd whilst using their custom solution for dock switching. If your ThinkPad switches output    
-modes automatically (KDE does this) you __do not__ need dockd. If you use some desktop that does not support output mode switching    
-(like Xfce or LXDE) or you use some lightweight window manager with barely any features (like i3 or awesome), but you have some     
+A few people have reported bugs with dockd whilst using their custom solution for dock switching. If your ThinkPad switches output
+modes automatically (KDE does this) you __do not__ need dockd. If you use some desktop that does not support output mode switching
+(like Xfce or LXDE) or you use some lightweight window manager with barely any features (like i3 or awesome), but you have some
 script that you made that handles dock switching using udev and xrandr you __do not__ need dockd.
-    
-If you wish to switch to dockd or test dockd, please disable those scripts *before* running dockd, because dockd and those scripts    
-are known to conflict each other.      
 
-However, if you dock your ThinkPad into the dock and nothing happens, you __do__ need dockd.    
+If you wish to switch to dockd or test dockd, please disable those scripts *before* running dockd, because dockd and those scripts
+are known to conflict each other.
+
+However, if you dock your ThinkPad into the dock and nothing happens, you __do__ need dockd.
 
 ## How does dockd work?
 
-Dockd works on the principle of output mode profiles. You define 2 profiles for monitor layouts and output modes and save them to disk.   
+Dockd works on the principle of output mode profiles. You define 2 profiles for monitor layouts and output modes and save them to disk.
 Then, when the dockd ACPI system detects that the ThinkPad has been docked or undocked, it reads those output mode profiles from disk
 and applies them.
 
@@ -43,42 +43,42 @@ Here's a video how this works:
 
 ## How to install dockd?
 
-If you run a newer version of Ubuntu than Xenial Xerus, there are Ubuntu repositories avaialble [here](/repositories) on ThinkPads.org.   
+If you run a newer version of Ubuntu than Xenial Xerus, there are Ubuntu repositories avaialble [here](/repositories) on ThinkPads.org.
 If you are using Arch Linux, there are packages in the [AUR](https://aur.archlinux.org/packages/dockd).
-    
-If you run neither of those, you need to build libthinkpad and dockd from source.    
 
-libthinkpad needs systemd >=221, so any system running systemd earlier than 221 is not supported currently.   
+If you run neither of those, you need to build libthinkpad and dockd from source.
+
+libthinkpad needs systemd >=221, so any system running systemd earlier than 221 is not supported currently.
 However, that will change in the future as the depenency on systemd is no strong.
 
 Here's how to build dockd from source:
 
-__1) [Build libthinkpad from source and install it](#)__    
+__1) [Build libthinkpad from source and install it](#)__
 __2) Install the development dependencies__
 
 Dockd depends on `libXrandr` and `libthinkpad`.
 
-To build dockd you need the X11 RandR extension API installed and ready for development, which means that you need to install your distributions         
+To build dockd you need the X11 RandR extension API installed and ready for development, which means that you need to install your distributions
 development package for it.
 
 Here's the package name for popular distributions:
 
-Debian: `libXrandr-dev`    
-Fedora: `libxrandr-devel`   
-Gentoo: `libXrandr`    
+Debian: `libXrandr-dev`
+Fedora: `libxrandr-devel`
+Gentoo: `libXrandr`
 openSUSE: `libXrandr-devel`
 
-If your distribution's package manager supports file search (aka. provides), search for `X11/extensions/Xrandr.h`     
+If your distribution's package manager supports file search (aka. provides), search for `X11/extensions/Xrandr.h`
 
 *NOTE*: Watch out for that capital 'X' on some distributions.
 
-Install that package with your distribution's package management system.   
+Install that package with your distribution's package management system.
 
 __3) Install the build system dependencies__
 
 *Note: If you built libthinkpad yourself you can skip this step.*
 
-dockd uses CMake as it's build system, so we need to install that. Version >=2.8 is needed, and most distributions provide versions greater    
+dockd uses CMake as it's build system, so we need to install that. Version >=2.8 is needed, and most distributions provide versions greater
 than that. The package is usually called `cmake`. Install it, and verify that CMake version >=2.8 is operational by running `cmake --version`:
 
 ```
@@ -88,15 +88,15 @@ cmake version 3.7.2
 CMake suite maintained and supported by Kitware (kitware.com/cmake).
 ```
 
-Next, we need a compiler suite that is C++11 compilant. dockd was developed and tested with the GNU Compiler Collection, version 5.4.0 on    
+Next, we need a compiler suite that is C++11 compilant. dockd was developed and tested with the GNU Compiler Collection, version 5.4.0 on
 Ubuntu Xenial Xerus. The package has very different names for different systems, here are the most popular ones:
 
-Ubuntu: `build-essential`    
-Debian: `build-essential`   
-Fedora: `gcc-c++`  
-openSUSE: `gcc-c++`    
+Ubuntu: `build-essential`
+Debian: `build-essential`
+Fedora: `gcc-c++`
+openSUSE: `gcc-c++`
 
-After installing the GNU C++ Compiler, verify that it works by running `g++ --version`:    
+After installing the GNU C++ Compiler, verify that it works by running `g++ --version`:
 
 ```
 thinkpad :: ~ » g++ --version
@@ -107,8 +107,8 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 ```
 
-Next, we need a Makefile-compatible runner. We will use GNU Make. The package is called `make` on almost all distributions, so install that.   
-After installing, please verify that GNU Make is operational by running `make --version`:    
+Next, we need a Makefile-compatible runner. We will use GNU Make. The package is called `make` on almost all distributions, so install that.
+After installing, please verify that GNU Make is operational by running `make --version`:
 
 ```
 thinkpad :: ~ » make --version
@@ -126,9 +126,9 @@ __4) Obtain the source code__
 
 Head over to our [FTP archive](/ftp/dockd/) and download the latest `.tar.gz` file from there.
 
-* Extract the tarball: `tar -xf dockd-x.xx.tar.gz`.    
-* Change directory to the extracted files: `cd dockd-x.xx.tar.gz`    
-* Verify you are in the source tree:      
+* Extract the tarball: `tar -xf dockd-x.xx.tar.gz`.
+* Change directory to the extracted files: `cd dockd-x.xx.tar.gz`
+* Verify you are in the source tree:
 
 ```
 thinkpad :: ~/Downloads/dockd-1.20 » ls -la
@@ -141,7 +141,7 @@ drwxr-xr-x 4 gala gala 12288 Nov 19 17:25 ..
 -rw-r--r-- 1 gala gala   204 Nov 17 17:15 dockd.desktop
 -rw-rw-r-- 1 gala gala  5130 Nov 16 15:27 main.cpp
 ```
-    
+
 * Run `cmake . -DCMAKE_INSTALL_PREFIX=/usr`
 
 ```
@@ -168,7 +168,7 @@ thinkpad :: ~/Downloads/dockd-1.20 » cmake . -DCMAKE_INSTALL_PREFIX=/usr
 * Run `make`
 
 ```
-thinkpad :: ~/Downloads/dockd-1.20 » make                            
+thinkpad :: ~/Downloads/dockd-1.20 » make
 [ 33%] Building CXX object CMakeFiles/dockd.dir/main.cpp.o
 [ 66%] Building CXX object CMakeFiles/dockd.dir/crtc.cpp.o
 [100%] Linking CXX executable dockd
@@ -185,7 +185,7 @@ Install the project...
 -- Installing: /usr/bin/dockd
 -- Installing: /etc/xdg/autostart/dockd.desktop
 ```
-    
+
 * Verify that dockd is operational by running `dockd`
 
 ```
@@ -203,14 +203,14 @@ See --help for more information
 __5) Create the needed directories__
 
 * `sudo mkdir /etc/dockd`
-    
+
 __6) Dockd is now installed__
-    
+
 ## How to use dockd?
 
-Please, before going further verify that nothing interacts with the dock from your desktop and read [Do you need dockd?](#doyouneeddockd).    
+Please, before going further verify that nothing interacts with the dock from your desktop and read [Do you need dockd?](#doyouneeddockd).
 
-Dockd has two configuration files in `/etc/dockd/` that need to be written. First, we write the configuration when the ThinkPad is docked.    
+Dockd has two configuration files in `/etc/dockd/` that need to be written. First, we write the configuration when the ThinkPad is docked.
 
 * Insert your ThinkPad into the dock
 * Configure the display layouts and resolutions using your desktop environments interface (or `xrandr` if you use something like i3)
@@ -241,8 +241,8 @@ thinkpad :: ~/Downloads/dockd-1.20 » sudo dockd --config undocked
 config file written to /etc/dockd/undocked.conf
 ```
 
-All config files are now written and dockd is ready for usage.   
-    
+All config files are now written and dockd is ready for usage.
+
 Now, just log out and log back in, and verify that dockd is running in the background by running `ps -ux | grep dockd`
 
 ```
