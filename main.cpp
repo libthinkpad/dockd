@@ -32,13 +32,13 @@ void ACPIHandler::handleEvent(ACPIEvent event) {
         case ACPIEvent::DOCKED:
             pthread_mutex_lock(&mutex);
             manager.applyConfiguration(CRTControllerManager::DockState::DOCKED);
-	    hooks.executeDockHook();
+            hooks.executeDockHook();
             pthread_mutex_unlock(&mutex);
             break;
         case ACPIEvent::UNDOCKED:
             pthread_mutex_lock(&mutex);
             manager.applyConfiguration(CRTControllerManager::DockState::UNDOCKED);
-	    hooks.executeUndockHook();
+            hooks.executeUndockHook();
             pthread_mutex_unlock(&mutex);
             break;
         case ACPIEvent::POWER_S3S4_EXIT:
@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
 
         if (argc < 3) {
             fprintf(stderr, "--config requires an option. See --help.\n");
-            return EXIT_SUCCESS;
+            return EXIT_FAILURE;
         }
 
         return writeConfig(argv[2]);
@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
 
         if (argc < 3) {
             fprintf(stderr, "--config requires an option. See --help.\n");
-            return EXIT_SUCCESS;
+            return EXIT_FAILURE;
         }
 
         return applyConfig(argv[2]);
