@@ -69,7 +69,7 @@ Install that package with your distribution's package management system.
 dockd uses CMake as it's build system, so we need to install that. Version >=2.8 is needed, and most distributions provide versions greater than that. The package is usually called `cmake`. Install it, and verify that CMake version >=2.8 is operational by running `cmake --version`:
 
 ```
-user@host:~ $ cmake --version
+$ cmake --version
 cmake version 3.7.2
 
 CMake suite maintained and supported by Kitware (kitware.com/cmake).
@@ -85,7 +85,7 @@ openSUSE: `gcc-c++`
 After installing the GNU C++ Compiler, verify that it works by running `g++ --version`:
 
 ```
-user@host:~ $ g++ --version
+$ g++ --version
 g++ (Ubuntu 5.4.0-6ubuntu1~16.04.5) 5.4.0 20160609
 Copyright (C) 2015 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
@@ -95,7 +95,7 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 Next, we need a Makefile-compatible runner. We will use GNU Make. The package is called `make` on almost all distributions, so install that. After installing, please verify that GNU Make is operational by running `make --version`:
 
 ```
-user@host:~ $ make --version
+$ make --version
 GNU Make 4.1
 Built for x86_64-pc-linux-gnu
 Copyright (C) 1988-2014 Free Software Foundation, Inc.
@@ -114,7 +114,7 @@ Head over to our [FTP archive](/ftp/dockd/) and download the latest `.tar.gz` fi
   - Change directory to the extracted files: `cd dockd-x.xx.tar.gz`
   - Verify you are in the source tree:
     ```
-    user@host:~ $ ls -la
+    $ ls -la
     total 52
     drwxrwxr-x 2 gala gala  4096 Nov 19 17:25 .
     drwxr-xr-x 4 gala gala 12288 Nov 19 17:25 ..
@@ -126,7 +126,7 @@ Head over to our [FTP archive](/ftp/dockd/) and download the latest `.tar.gz` fi
     ```
   - Run `cmake . -DCMAKE_INSTALL_PREFIX=/usr`
     ```
-    user@host:~ $ cmake . -DCMAKE_INSTALL_PREFIX=/usr
+    $ cmake . -DCMAKE_INSTALL_PREFIX=/usr
     -- The C compiler identification is GNU 5.4.0
     -- The CXX compiler identification is GNU 5.4.0
     -- Check for working C compiler: /usr/bin/cc
@@ -147,7 +147,7 @@ Head over to our [FTP archive](/ftp/dockd/) and download the latest `.tar.gz` fi
     ```
   - Run `make`
     ```
-    user@host:~ $ make
+    $ make
     [ 33%] Building CXX object CMakeFiles/dockd.dir/main.cpp.o
     [ 66%] Building CXX object CMakeFiles/dockd.dir/crtc.cpp.o
     [100%] Linking CXX executable dockd
@@ -155,7 +155,7 @@ Head over to our [FTP archive](/ftp/dockd/) and download the latest `.tar.gz` fi
     ```
   - Run `sudo make install`
     ```
-    user@host:~ $ sudo make install
+    $ sudo make install
     [100%] Built target dockd
     Install the project...
     -- Install configuration: ""
@@ -164,7 +164,7 @@ Head over to our [FTP archive](/ftp/dockd/) and download the latest `.tar.gz` fi
     ```
   - Verify that dockd is operational by running `dockd`
     ```
-    user@host:~ $ dockd
+    $ dockd
     dockd 1.20 (libthinkpad 2.3)
     Copyright (C) 2017 The Thinkpads.org Team
     License: FreeBSD License (BSD 2-Clause) <https://www.freebsd.org/copyright/freebsd-license.html>.
@@ -197,7 +197,7 @@ Here is an example of one external monitor on a ThinkPad X220 and a Ultrabase Se
   - Run `sudo dockd --config docked`
 
 ```
-user@host:~ $ sudo dockd --config docked
+$ sudo dockd --config docked
 config file written to /etc/dockd/docked.conf
 ```
 The configuration when docked is now written.
@@ -212,7 +212,7 @@ Here is an example of a Lenovo X220 internal panel running at it's native resolu
   - Run `sudo dockd --config undocked`
 
 ```
-user@host:~ $ sudo dockd --config undocked
+$ sudo dockd --config undocked
 config file written to /etc/dockd/undocked.conf
 ```
 
@@ -221,7 +221,7 @@ All config files are now written and dockd is ready for usage.
 Now, just log out and log back in, and verify that dockd is running in the background by running `ps -ux | grep dockd`
 
 ```
-user@host:~ $ ps -ux | grep dockd
+$ ps -ux | grep dockd
 gala      5831  0.0  0.0 287768  5184 ?        Sl   08:58   0:00 dockd --daemon
 ```
 
@@ -244,7 +244,7 @@ Here is an example of one external monitor on a ThinkPad X220 and a Ultrabase Se
   - Run `sudo dockd --config docked`
 
 ```
-user@host:~ $ sudo dockd --config docked
+$ sudo dockd --config docked
 config file written to /etc/dockd/docked.conf
 ```
 
