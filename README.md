@@ -34,11 +34,9 @@ Here's a video how this works:
 
 ## How to install dockd?
 
-If you run a newer version of Ubuntu than Xenial Xerus, there are Ubuntu repositories avaialble [here](/repositories) on ThinkPads.org. If you are using Arch Linux, there are packages in the [AUR](https://aur.archlinux.org/packages/dockd).
+No Debian repositories are avaialble at the moment. Please install from source. If you are using Arch Linux, there are packages in the [AUR](https://aur.archlinux.org/packages/dockd).
 
 If you run neither of those, you need to build libthinkpad and dockd from source.
-
-libthinkpad needs systemd >=221, so any system running systemd earlier than 221 is not supported currently. However, that will change in the future as the depenency on systemd is no strong.
 
 Here's how to build dockd from source:
 
