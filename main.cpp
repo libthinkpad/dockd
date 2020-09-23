@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cstdio>
 #include <cstring>
 #include <syslog.h>
 
@@ -23,7 +23,7 @@ private:
     Hooks hooks;
 
 public:
-    void handleEvent(ACPIEvent event);
+    void handleEvent(ACPIEvent event) override;
 };
 
 void ACPIHandler::handleEvent(ACPIEvent event) {

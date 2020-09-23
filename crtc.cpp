@@ -28,8 +28,10 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
     /*
      * Step 0: Check config files
      * Step 1: Open the right config file
-     * Step 3: Apply the crtc configuration
-     * Step 4: Apply the screen configuration
+     * Step 2: Parse the crtc configuration
+     * Step 3: Disable all crts
+     * Step 4: Resize the screen
+     * Step 5: Apply the crtc configuration
      */
 
     /* Step 0 */
@@ -58,7 +60,7 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
     }
 
 
-    /* Step 3 */
+    /* Step 2 */
 
     vector<IniSection*> configControllers = config.getSections("CRTC");
 
@@ -77,7 +79,7 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
     for (int i = 0; i < resources->ncrtc; i++) {
         RRCrtc *rrCrtc = (resources->crtcs + i);
         for (IniSection* section : configControllers) {
-            RRCrtc crtc = (RRCrtc) section->getInt("crtc");
+            auto crtc = (RRCrtc) section->getInt("crtc");
             if (*rrCrtc == crtc) {
                 matched++;
             }
@@ -116,7 +118,7 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
 
         bool outputOff = false;
 
-        if (configOutputNames.size() == 0) {
+        if (configOutputNames.empty()) {
             outputOff = true;
         }
 
@@ -131,7 +133,7 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
             break;
         }
 
-        CRTConfig *crtcConfig = new CRTConfig;
+        auto *crtcConfig = new CRTConfig;
 
         crtcConfig->crtc = (RRCrtc) configSection->getInt("crtc");
         crtcConfig->x = configSection->getInt("x");
@@ -149,19 +151,19 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
 
     }
 
-    /* Apply the configs */
-
     if (!isControllerConfigValid) {
         syslog(LOG_ERR, "Controller config is not valid, not committing changes to X\n");
         return false;
     }
 
+    /* Step 3 */
+
     XGrabServer(display);
 
     for (CRTConfig *controller : controllerConfigs) {
 
-        syslog(LOG_INFO, "Applying config to %4lu: mode: %4lu, outputs: %4zu, x: %4d, y: %4d\n",
-               controller->crtc, controller->mode, controller->noutputs, controller->x, controller->y);
+        syslog(LOG_INFO, "Disabling %4lu\n",
+               controller->crtc);
 
 #ifndef DRYRUN
 
@@ -169,23 +171,18 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
                          resources,
                          controller->crtc,
                          CurrentTime,
-                         controller->x,
-                         controller->y,
-                         controller->mode,
-                         controller->rotation,
-                         controller->outputs,
-                         (int) controller->noutputs); // cast: stack smashing: size_t (ul) copy into noutputs: int (d)
+                         0,
+                         0,
+                         None,
+                         RR_Rotate_0,
+                         nullptr,
+                         0);
 
 #endif // DRYRUN
 
-        free(controller->outputs);
-        delete controller;
-
     }
 
-    XUngrabServer(display);
     XSync(display, 0);
-    XGrabServer(display);
 
     /* Step 4 */
 
@@ -205,9 +202,40 @@ bool CRTControllerManager::applyConfiguration(CRTControllerManager::DockState st
 
 #endif // DRYRUN
 
-    XUngrabServer(display);
+    XSync(display, 0);
+
+    /* Step 5 */
+
+    for (CRTConfig *controller : controllerConfigs) {
+
+        syslog(LOG_INFO, "Applying config to %4lu: mode: %4lu, outputs: %4zu, x: %4d, y: %4d\n",
+               controller->crtc, controller->mode, controller->noutputs, controller->x, controller->y);
+
+#ifndef DRYRUN
+
+        if (controller->mode != 0) { // CRTC is to be enabled
+            XRRSetCrtcConfig(display,
+                             resources,
+                             controller->crtc,
+                             CurrentTime,
+                             controller->x,
+                             controller->y,
+                             controller->mode,
+                             controller->rotation,
+                             controller->outputs,
+                             (int) controller->noutputs); // cast: stack smashing: size_t (ul) copy into noutputs: int (d)
+        }
+
+
+#endif // DRYRUN
+
+        free(controller->outputs);
+        delete controller;
+
+    }
 
     XSync(display, 0);
+    XUngrabServer(display);
 
     return true;
 
@@ -239,7 +267,7 @@ bool CRTControllerManager::writeConfigToDisk(CRTControllerManager::DockState sta
     int mm_width = DisplayWidthMM(display, screen);
     int mm_height = DisplayHeightMM(display, screen);
 
-    IniSection *screen = new IniSection("Screen");
+    auto *screen = new IniSection("Screen");
 
     screen->setInt("height", height);
     screen->setInt("width", width);
@@ -252,7 +280,7 @@ bool CRTControllerManager::writeConfigToDisk(CRTControllerManager::DockState sta
 
     for (int i = 0; i < resources->ncrtc; i++) {
 
-        IniSection *section = new IniSection("CRTC");
+        auto *section = new IniSection("CRTC");
 
         RRCrtc *crtc = (resources->crtcs + i);
         XRRCrtcInfo *info = XRRGetCrtcInfo(display, resources, *crtc);
@@ -301,7 +329,7 @@ bool CRTControllerManager::writeConfigToDisk(CRTControllerManager::DockState sta
              * we need to copy the string to the heap,
              * add it to the ini and free it later
              */
-            char *name_st = (char*) calloc(strlen(info->name) + 1, sizeof(char));
+            auto *name_st = (char*) calloc(strlen(info->name) + 1, sizeof(char));
             strcpy(name_st, info->name);
             names.push_back(name_st);
 
@@ -419,7 +447,7 @@ CRTControllerManager::OutputConfigs CRTControllerManager::getOutputConfigs(vecto
 
     }
 
-    if (configs.mode == None && configs.outputs.size() > 0) {
+    if (configs.mode == None && !configs.outputs.empty()) {
         syslog(LOG_ERR, "runtime error\n");
     }
 
@@ -446,7 +474,7 @@ bool CRTControllerManager::isOutputModeSupported(RROutput output, RRMode mode) {
 
 void CRTControllerManager::connectToX() {
 
-    display = XOpenDisplay(NULL);
+    display = XOpenDisplay(nullptr);
 
     if (!display) {
         syslog(LOG_ERR, "Error opening display!\n");
