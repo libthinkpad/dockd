@@ -49,10 +49,10 @@ To build dockd you need the X11 RandR extension API installed and ready for deve
 
 Here's the package name for popular distributions:
 
-Debian: `libXrandr-dev`
-Fedora: `libxrandr-devel`
-Gentoo: `libXrandr`
-openSUSE: `libXrandr-devel`
+- Debian: `libxrandr-dev`
+- Fedora: `libxrandr-devel`
+- Gentoo: `libXrandr`
+- openSUSE: `libXrandr-devel`
 
 If your distribution's package manager supports file search (aka. provides), search for `X11/extensions/Xrandr.h`
 
