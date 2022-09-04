@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <cstring>
 #include <syslog.h>
+#include <pthread.h>
 
 #include "crtc.h"
 #include "hooks.h"
