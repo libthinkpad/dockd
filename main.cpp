@@ -7,7 +7,7 @@
 #include "hooks.h"
 #include "libthinkpad.h"
 
-#define VERSION "1.21"
+#define VERSION "1.3.1"
 
 using ThinkPad::PowerManagement::ACPI;
 using ThinkPad::PowerManagement::ACPIEvent;
